@@ -19,6 +19,57 @@ http.createServer(function(req, res) {
     readSchedule(req,res,day);
   }
 
+  else if (q.pathname === '/postEventEntry') {
+    var body = '';
+    // server starts receiving the form data
+    req.on('data', function(data) {
+      body += data;
+    }); // server has recieved all the form data
+    req.on('end', function() {
+      var post = qs.parse(body);
+      var name = post.name;
+      var day = post.day;
+      var event = post.event;
+      var start = post.start;
+      var end = post.end;
+      var location = post.location;
+      var info = post.info;
+      var url = post.url;
+
+      // storing a JSON object
+      var jsonObj = {};
+      jsonObj.name = name;
+      jsonObj.day = day;
+      jsonObj.event = event;
+      jsonObj.start = start;
+      jsonObj.end = end;
+      jsonObj.location = location;
+      jsonObj.info = info;
+      jsonObj.url = url;
+
+      // check adding event to json server code
+      
+      fs.readFile('client/schedule.html', (err, html) => {
+        if (err) {
+          throw err;
+        }
+        var scheduleObj = JSON.parse(html);
+        var dayEvents = scheduleObj[day];
+        dayEvents.push(event);
+        fs.writeFile('client/schedule.html', JSON.stringify(scheduleObj), (err) => {
+          if (err) {
+            throw err;
+          }
+          res.statusCode = 200; // may want to change this to 302 to /schedule.html
+          res.setHeader('Content-type', 'text/html');
+          res.write(html);
+          res.end();
+        });
+      });
+    });
+  }
+
+
   else if (q.pathname === '/addEvent.html') {
     addEventPage(req, res);
   }
