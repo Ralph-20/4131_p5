@@ -89,7 +89,27 @@
        $(element).addClass("active");
        clearTable();
        let day = $(element).text().toLowerCase();
-       //TODO: Make request and fill table with events for the day
+       //TODO: Make request TO getSchedule and fill table with events for the day 
+          fetch('http://localhost:9001/getSchedule/' + day)
+              .then(response => response.json())
+              .then(data => {
+                  data.forEach(event => {
+                      let row = '<tr><td>' + event.name + '</td><td>' + event.time + '</td><td>' + event.location + '</td><td>' + event.phone + '</td><td>' + event.extra + '</td></tr>';
+                      $('#scheduleTable tbody').append(row);
+                  });
+              });
+
+
+
+        // fetch('http://localhost:9001/events/' + day)
+        //   .then(response => response.json())
+        //   .then(data => {
+        //     data.forEach(event => {
+        //       let row = '<tr><td>' + event.name + '</td><td>' + event.time + '</td><td>' + event.location + '</td><td>' + event.phone + '</td><td>' + event.extra + '</td></tr>';
+        //       $('#scheduleTable tbody').append(row);
+        //     });
+        //   });
+       
      }
 
      function clearTable() {

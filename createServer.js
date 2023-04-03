@@ -15,6 +15,10 @@ http.createServer(function(req, res) {
   else if (q.pathname === '/schedule.html') {
     schedulePage(req, res);
   }
+  else if (q.pathname === '/getSchedule') {
+    readSchedule(req,res,day);
+  }
+
   else if (q.pathname === '/addEvent.html') {
     addEventPage(req, res);
   }
@@ -36,6 +40,21 @@ function indexPage(req, res) {
     res.end();
   });
 }
+
+function readSchedule(req, res, day) {
+  fs.readFile('client/schedule.html', (err, html) => {
+    if (err) {
+      throw err;
+    }
+    var scheduleObj = JSON.parse(html);
+    var dayEvents = scheduleObj[day];
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.write(JSON.stringify(dayEvents));
+    res.end();
+  });
+}
+
 
 
 function schedulePage(req, res) {
