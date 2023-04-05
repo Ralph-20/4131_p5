@@ -29,7 +29,7 @@ http.createServer(function(req, res) {
     }); // server has recieved all the form data
     req.on('end', function() {
       var post = qs.parse(body);
-      var name = post.name;
+      var name = post.event;
       var day = post.day;
       var event = post.event;
       var start = post.start;
@@ -37,29 +37,37 @@ http.createServer(function(req, res) {
       var location = post.location;
       var info = post.info;
       var url = post.url;
+      var phone = post.phone;
 
       // storing a JSON object
       var jsonObj = {};
       jsonObj.name = name;
       jsonObj.day = day;
-      jsonObj.event = event;
+      jsonObj.event = event; 
       jsonObj.start = start;
       jsonObj.end = end;
       jsonObj.location = location;
       jsonObj.info = info;
       jsonObj.url = url;
+      jsonObj.phone = phone;
 
+      day = day.toLowerCase();
 
       fileJsonString = fs.readFileSync('schedule.json');
       parsedJson = JSON.parse(fileJsonString);
+      console.log(parsedJson);
+      console.log(day);
       parsedJson[day].push(jsonObj);
+
       // getting an error on line above, need to sort by time after this too 
+      // need to sort here by time 
 
       fileJsonString = JSON.stringify(parsedJson);
       fs.writeFileSync('schedule.json', fileJsonString);
       res.writeHead(302, {
         'Location': 'schedule.html'
       });
+      res.end();
     });
   }
 
