@@ -49,30 +49,16 @@ http.createServer(function(req, res) {
       jsonObj.info = info;
       jsonObj.url = url;
 
-      // check adding event to json server code
-      
-      fs.readFile('client/schedule.html', (err, html) => {
-        if (err) {
-          throw err;
-        }
-        var scheduleObj = JSON.parse(html);
-        // var dayEvents = scheduleObj[day];
-        // dayEvents.push(event);
 
+      fileJsonString = fs.readFileSync('schedule.json');
+      parsedJson = JSON.parse(fileJsonString);
+      parsedJson[day].push(jsonObj);
+      // getting an error on line above, need to sort by time after this too 
 
-        // need to sort the events by start time
-
-
-        scheduleObj[day].push(jsonObj);
-        fs.writeFile('client/schedule.html', JSON.stringify(scheduleObj), (err) => {
-          if (err) {
-            throw err;
-          }
-          res.statusCode = 200; // may want to change this to 302 to /schedule.html
-          res.setHeader('Content-type', 'text/html');
-          res.write(html);
-          res.end();
-        });
+      fileJsonString = JSON.stringify(parsedJson);
+      fs.writeFileSync('schedule.json', fileJsonString);
+      res.writeHead(302, {
+        'Location': 'schedule.html'
       });
     });
   }
