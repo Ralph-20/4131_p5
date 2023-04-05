@@ -6,6 +6,7 @@ const qs = require('querystring');
 const port = 9001;
 http.createServer(function(req, res) {
   var q = url.parse(req.url, true);
+  console.log(q)
   if (q.pathname === '/') {
     indexPage(req, res);
   }
@@ -16,6 +17,7 @@ http.createServer(function(req, res) {
     schedulePage(req, res);
   }
   else if (q.pathname === '/getSchedule') {
+    var day = q.query.day;
     getSchedule(req,res,day);
   }
 
@@ -98,12 +100,13 @@ function indexPage(req, res) {
   });
 }
 
-function readSchedule(req, res, day) {
-  fs.readFile('client/schedule.html', (err, html) => {
+
+function getSchedule(req, res, day) {
+  fs.readFile('schedule.json', (err, json) => {
     if (err) {
       throw err;
     }
-    var scheduleObj = JSON.parse(html);
+    var scheduleObj = JSON.parse(json);
     var dayEvents = scheduleObj[day];
     res.statusCode = 200;
     res.setHeader('Content-type', 'application/json');
@@ -113,21 +116,20 @@ function readSchedule(req, res, day) {
 }
 
 
-// getSchedule will read in the contents of schedule.json for a given day
-function getSchedule(req, res, day) {
-  fs.readFile('schedule.json', (err, json) => {
-    if (err) {
-      throw err;
-    }
-    var dayEvents = json[day];
+// function getSchedule(req, res, day) {
+//   fs.readFile('schedule.json', (err, json) => {
+//     if (err) {
+//       throw err;
+//     }
+//     var dayEvents = json[day];
     
-    console.log(dayEvents);
-    res.statusCode = 200;
-    res.setHeader('Content-type', 'application/json');
-    res.write(dayEvents);
-    res.end();
-  });
-}
+//     console.log(dayEvents);
+//     res.statusCode = 200;
+//     res.setHeader('Content-type', 'application/json');
+//     res.write(dayEvents);
+//     res.end();
+//   });
+// }
 
 
 

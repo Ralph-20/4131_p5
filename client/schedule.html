@@ -89,18 +89,23 @@
        $(element).addClass("active");
        clearTable();
        let day = $(element).text().toLowerCase();
-        console.log(day);
-        var url = "localhost:9001/getSchedule"; 
-        url.searchParams.append('day', day);
-          fetch(url, {
-            method: 'GET'
-          })
+       console.log("day is " + day);
+
+        // var url = "localhost:9001/getSchedule"; 
+        // url.searchParams.append('day', day);
+          fetch("http://localhost:9001/getSchedule?day=" + day)
               .then(response => response.json())
               .then(data => {
-                  console.log("Data is " + data);
-                  console.log(data.name + data.description + data.time + data.location + data.phone + data.extra)
-                  let row = '<tr><td>' + event.name + '</td><td>' + event.start + '</td><td>' + event.end + '</td><td>' + event.phone + '</td><td>' + event.location + '</td><td>' + event.info + '</td><td>' + event.url + '</td></tr>';
-                  $('#scheduleTable').append(row);
+                  console.log(data);
+                  data.forEach(function (data) {
+                      console.log(data);
+                      let row = '<tr><td>' + data.name + '</td><td>' + data.start + '-' + data.end + '</td><td>' + data.location + '</td><td>' + data.phone + '</td><td>' + '<a href="' + data.url  + '">' + data.info + '</a>'  + '</td></tr>';
+                      $('#scheduleTable').append(row);
+                  });
+
+                  // console.log(data.name, data.description, data.time, data.location, data.phone, data.extra)
+                  // let row = '<tr><td>' + data.name + '</td><td>' + data.start + '</td><td>' + data.end + '</td><td>' + data.phone + '</td><td>' + data.location + '</td><td>' + data.info + '</td><td>' + data.url + '</td></tr>';
+                  // $('#scheduleTable').append(row);
               });
 
        
