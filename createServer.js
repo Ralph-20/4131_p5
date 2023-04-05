@@ -16,7 +16,7 @@ http.createServer(function(req, res) {
     schedulePage(req, res);
   }
   else if (q.pathname === '/getSchedule') {
-    readSchedule(req,res,day);
+    getSchedule(req,res,day);
   }
 
   else if (q.pathname === '/postEventEntry') {
@@ -54,8 +54,14 @@ http.createServer(function(req, res) {
           throw err;
         }
         var scheduleObj = JSON.parse(html);
-        var dayEvents = scheduleObj[day];
-        dayEvents.push(event);
+        // var dayEvents = scheduleObj[day];
+        // dayEvents.push(event);
+
+
+        // need to sort the events by start time
+
+
+        scheduleObj[day].push(jsonObj);
         fs.writeFile('client/schedule.html', JSON.stringify(scheduleObj), (err) => {
           if (err) {
             throw err;
@@ -102,6 +108,23 @@ function readSchedule(req, res, day) {
     res.statusCode = 200;
     res.setHeader('Content-type', 'application/json');
     res.write(JSON.stringify(dayEvents));
+    res.end();
+  });
+}
+
+
+// getSchedule will read in the contents of schedule.json for a given day
+function getSchedule(req, res, day) {
+  fs.readFile('schedule.json', (err, json) => {
+    if (err) {
+      throw err;
+    }
+    var dayEvents = json[day];
+    
+    console.log(dayEvents);
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.write(dayEvents);
     res.end();
   });
 }
