@@ -62,10 +62,8 @@ http.createServer(function(req, res) {
       // sorting the events by start time
 
       parsedJson[day].sort(function(a, b) {
-        var timeA = a.start;
-        timeA = timeA.split(":");
-        var timeB = b.start;
-        timeB = timeB.split(":");
+        var timeA = a.start.split(":");
+        var timeB = b.start.split(":");
         var hourA = timeA[0];
         var hourB = timeB[0];
         var minA = timeA[1];
