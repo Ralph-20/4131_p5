@@ -59,8 +59,37 @@ http.createServer(function(req, res) {
       console.log(day);
       parsedJson[day].push(jsonObj);
 
-      // getting an error on line above, need to sort by time after this too 
-      // need to sort here by time 
+      // sorting the events by start time
+
+      parsedJson[day].sort(function(a, b) {
+        var timeA = a.start;
+        timeA = timeA.split(":");
+        var timeB = b.start;
+        timeB = timeB.split(":");
+        var hourA = timeA[0];
+        var hourB = timeB[0];
+        var minA = timeA[1];
+        var minB = timeB[1];
+        if (hourA == hourB) {
+          return minA - minB;
+        }
+        return hourA - hourB;
+      });
+
+
+      // converting from military time to normal time
+
+      for (var i = 0; i < parsedJson[day].length; i++) {
+        var startTimeMil = parsedJson[day][i].start;
+        var endTimeMil = parsedJson[day][i].end;
+        var startTime = convertTime(startTimeMil);
+        var endTime = convertTime(endTimeMil);
+
+
+        parsedJson[day][i].start = startTime;
+        parsedJson[day][i].end = endTime;
+      }
+
 
       fileJsonString = JSON.stringify(parsedJson);
       fs.writeFileSync('schedule.json', fileJsonString);
@@ -80,6 +109,24 @@ http.createServer(function(req, res) {
     return res.end("404 Not Found");
   }
 }).listen(port);
+
+
+function convertTime(militaryTime) {
+  let timeArray = militaryTime.split(":");
+  let hour = parseInt(timeArray[0]);
+  let minute = parseInt(timeArray[1]);
+
+  let ampm = "AM";
+  if (hour >= 12) {
+    ampm = "PM";
+    hour -= 12;
+  }
+  if (hour == 0) {
+    hour = 12;
+  }
+
+  return hour + ":" + (minute < 10 ? "0" + minute : minute) + " " + ampm;
+}
 
 
 function indexPage(req, res) {
@@ -108,22 +155,6 @@ function getSchedule(req, res, day) {
     res.end();
   });
 }
-
-
-// function getSchedule(req, res, day) {
-//   fs.readFile('schedule.json', (err, json) => {
-//     if (err) {
-//       throw err;
-//     }
-//     var dayEvents = json[day];
-    
-//     console.log(dayEvents);
-//     res.statusCode = 200;
-//     res.setHeader('Content-type', 'application/json');
-//     res.write(dayEvents);
-//     res.end();
-//   });
-// }
 
 
 
